@@ -6,17 +6,19 @@ public class Virus {
     private int lifetime;
 
     // Methods
-    public void setInfectiousness() {
-
+    public void setInfectiousness(float infectiousness) {
+        this.infectiousness = infectiousness;
     }
+    
     public float getInfectiousness() {
-        return 0;
+        return this.infectiousness;
     }
 
     public void setLifetime(int lifetime) {
-
+        this.lifetime = lifetime;
     }
+
     public int getLifetime() {
-        return 0;
+        return this.lifetime;
     }
 }

@@ -3,26 +3,31 @@ import simulator.core.essence.creature.virus.*;
 
 public abstract class Creature {
     // Fields
-    private int id;
-    private Virus virus = null;
+    protected Virus virus = null;
 
     // Methods
-    public void setId(int id) {
-        this.id = id;
-    }
-    public int getId() {
-        return this.id;
-    }
     public boolean isInfected(){
         if (this.virus != null)
             return true;
         else
             return false;
     }
+
     public abstract float getInfectiousness();
-    public abstract void setInfectiousness();
+    public abstract void setInfectiousness(float infectiousness);
+
     public int getVirusLifetime() {
-        return 0;
+        if (this.virus != null) {
+            return this.virus.getLifetime();
+        } else {
+            return 0;
+        }
     }
 
+    public void updateVirusLifetime() {
+        if (this.virus != null) {
+            int lifetime = this.getVirusLifetime() + 1;
+            this.virus.setLifetime(lifetime);
+        }
+    }
 }
