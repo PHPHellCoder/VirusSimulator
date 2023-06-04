@@ -7,11 +7,15 @@ public class Country {
     private String countryName;
     private ArrayList<Human> humanPopulation = new ArrayList<>();
     private ArrayList<Animal> animalPopulation = new ArrayList<>();
-    private Stats stats;
+    private Stats stats = new Stats();
 
     // Methods
     public Country(String name) {
         this.countryName = name;
+    }
+
+    public String getCountryName() {
+        return this.countryName;
     }
 
     public void addHuman() {
@@ -28,8 +32,16 @@ public class Country {
         return humanPopulation;
     }
 
+    public void setHumanPopulation(ArrayList<Human> humanPopulation) {
+        this.humanPopulation = humanPopulation;
+    }
+
     public ArrayList<Animal> getAnimalPopulation() {
         return animalPopulation;
+    }
+
+    public void setAnimalPopulation(ArrayList<Animal> animalPopulation) {
+        this.animalPopulation = animalPopulation;
     }
 
     public Stats getStats() {
