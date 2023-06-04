@@ -1,4 +1,5 @@
 package simulator.core.essence.creature;
+import simulator.core.essence.creature.virus.Virus;
 
 public class Animal extends Creature{
     // Fields
@@ -20,6 +21,9 @@ public class Animal extends Creature{
 
     public void setInfectiousness(float infectiousness) {
         if (this.isInfected()) {
+            this.virus.setInfectiousness(infectiousness);
+        } else {
+            this.virus = new Virus();
             this.virus.setInfectiousness(infectiousness);
         }
     }
