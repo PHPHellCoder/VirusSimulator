@@ -60,7 +60,10 @@ public class IterationHandler {
             Country country = this.countries.get(i);
             ArrayList<Human> humans = country.getHumans();
             ArrayList<Animal> animals = country.getAnimals();
-            // killCreatures((Creature)humans);
+            killCreatures(humans);
+            killCreatures(animals);
+            updateTimeToDeath(humans);
+            updateTimeToDeath(animals);
             humans = this.contactHtoH(humans);
             country.setHumans(humans);
             animals = this.contactAtoA(animals);
@@ -137,28 +140,13 @@ public class IterationHandler {
         return animals;
     }
 
-    // private ArrayList<Human> updateTimeToDeath(ArrayList<Human> humans) {
-    //     for(int i = 0; i < humans.size(); i++) {
+    private void updateTimeToDeath(ArrayList<? extends Creature> creatures) {
+        for(Creature creature : creatures) {
+            creature.updateTimeToDeath();
+        }
+    }
 
-    //     }
-    // }
-
-    // private void killCreatures(ArrayList<Human> humans, ArrayList<Animal> animals) {
-    //     for(int i = 0; i < humans.size(); i++) {
-    //         if(humans.get(i).getTimeToDeath() == 0) {
-    //             humans.remove(i);
-    //             i--;
-    //         }
-    //     }
-    //     for(int i = 0; i < animals.size(); i++) {
-    //         if(animals.get(i).getTimeToDeath() == 0) {
-    //             animals.remove(i);
-    //             i--;
-    //         }
-    //     }
-    // }
-
-    private void killCreatures(ArrayList<Creature> creatures) {
+    private void killCreatures(ArrayList<? extends Creature> creatures) {
         for(int i = 0; i < creatures.size(); i++) {
             if(creatures.get(i).getTimeToDeath() == 0) {
                 creatures.remove(i);
