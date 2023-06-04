@@ -3,7 +3,7 @@ package simulator.core.essence.creature.virus;
 public class Virus {
     // Fields
     private float infectiousness;
-    private int lifetime = 0;
+    private int timeToDeath = 5;
 
     // Methods
     public void setInfectiousness(float infectiousness) {
@@ -14,11 +14,11 @@ public class Virus {
         return this.infectiousness;
     }
 
-    public void setLifetime(int lifetime) {
-        this.lifetime = lifetime;
+    public void setTimeToDeath(int timeToDeath) {
+        this.timeToDeath = timeToDeath;
     }
 
-    public int getLifetime() {
-        return this.lifetime;
+    public int getTimeToDeath() {
+        return this.timeToDeath;
     }
 }

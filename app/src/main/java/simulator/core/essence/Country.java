@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Country {
     // Fields
     private String countryName;
-    private ArrayList<Human> humanPopulation = new ArrayList<>();
-    private ArrayList<Animal> animalPopulation = new ArrayList<>();
+    private ArrayList<Human> humans = new ArrayList<>();
+    private ArrayList<Animal> animals = new ArrayList<>();
     private Stats stats = new Stats();
 
     // Methods
@@ -20,28 +20,28 @@ public class Country {
 
     public void addHuman() {
         this.stats.startHumanPopulation++;
-        humanPopulation.add(new Human());
+        humans.add(new Human());
     }
 
     public void addAnimal() {
         this.stats.startAnimalPopulation++;
-        animalPopulation.add(new Animal());
+        animals.add(new Animal());
     }
 
-    public ArrayList<Human> getHumanPopulation() {
-        return humanPopulation;
+    public ArrayList<Human> getHumans() {
+        return humans;
     }
 
-    public void setHumanPopulation(ArrayList<Human> humanPopulation) {
-        this.humanPopulation = humanPopulation;
+    public void setHumans(ArrayList<Human> humans) {
+        this.humans = humans;
     }
 
-    public ArrayList<Animal> getAnimalPopulation() {
-        return animalPopulation;
+    public ArrayList<Animal> getAnimals() {
+        return animals;
     }
 
-    public void setAnimalPopulation(ArrayList<Animal> animalPopulation) {
-        this.animalPopulation = animalPopulation;
+    public void setAnimals(ArrayList<Animal> animals) {
+        this.animals = animals;
     }
 
     public Stats getStats() {

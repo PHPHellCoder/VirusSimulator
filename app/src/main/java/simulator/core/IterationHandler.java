@@ -3,13 +3,27 @@ import simulator.core.essence.*;
 import simulator.core.essence.creature.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.lang.Math;
 
 public class IterationHandler {
     // Fields
     private ArrayList<Country> countries = new ArrayList<>();
-    private int currentIteration;
+    private int currentIteration = 0;
+    private int HtoHcontacts;
+    private int AtoAcontacts;
+    private int HtoAcontacts;
+    private float minInfectiousness;
+    private float maxInfectiousness;
 
     // Methods
+    public IterationHandler(int HtoHcontacts, int AtoAcontacts, int HtoAcontacts, float minInfectiousness, float maxInfectiousness) {
+        this.HtoHcontacts = HtoHcontacts;
+        this.AtoAcontacts = AtoAcontacts;
+        this.HtoAcontacts = HtoAcontacts;
+        this.minInfectiousness = minInfectiousness;
+        this.maxInfectiousness = maxInfectiousness;
+    }
+
     public void addCountry(String name, int humanCount, int animalCount) {
         Country country = new Country(name);
         for(int i = 0; i < humanCount; i++) {
@@ -29,11 +43,11 @@ public class IterationHandler {
         for(Country country : this.countries) {
             if (country.getCountryName() == countryName) {
                 Stats stats = country.getStats();
-                ArrayList<Animal> animals = country.getAnimalPopulation();
+                ArrayList<Animal> animals = country.getAnimals();
                 Animal animal = animals.get(0);
                 animal.setInfectiousness(1);
                 animals.set(0, animal);
-                country.setAnimalPopulation(animals);
+                country.setAnimals(animals);
                 stats.infectedAnimals++;
                 return;
             }
@@ -42,6 +56,17 @@ public class IterationHandler {
 
     public void nextIteration() {
         this.currentIteration++;
+        for(int i = 0; i < this.countries.size(); i++) {
+            Country country = this.countries.get(i);
+            ArrayList<Human> humans = country.getHumans();
+            ArrayList<Animal> animals = country.getAnimals();
+            // killCreatures((Creature)humans);
+            humans = this.contactHtoH(humans);
+            country.setHumans(humans);
+            animals = this.contactAtoA(animals);
+            country.setAnimals(animals);
+            country.updateStats(this.updateStats(country.getStats(), humans, animals));
+        }
     }
 
     public HashMap<String, Stats> getAllStats() {
@@ -50,5 +75,117 @@ public class IterationHandler {
             allStats.put(country.getCountryName(), country.getStats());
         }
         return allStats;
+    }
+
+    private ArrayList<Human> contactHtoH(ArrayList<Human> humans) {
+        for(int i = 0; i < humans.size(); i++) {
+            if (humans.get(i).isInfected()) {
+                Human infectedHuman = humans.get(i);
+                float infectiousness = infectedHuman.getInfectiousness();
+                if (infectedHuman.hasMask)
+                    infectiousness /= 2;
+                for(int j = 0; j < this.HtoHcontacts - 1; j++) {
+                    int n = (int)(Math.random() * humans.size());
+                    if (n != i) {
+                        Human healthyHuman = humans.get(n);
+                        float proc = (float)Math.random();
+                        if (healthyHuman.hasMask) {
+                            if (proc < (infectiousness / 1.5)) {
+                                float newInfectiousness = (float)(Math.random()*(this.maxInfectiousness - this.minInfectiousness) + this.minInfectiousness);
+                                healthyHuman.setInfectiousness(newInfectiousness);
+                                humans.set(n, healthyHuman);
+                            }
+                        } else {
+                            if (proc < (infectiousness)) {
+                                float newInfectiousness = (float)(Math.random()*(this.maxInfectiousness - this.minInfectiousness) + this.minInfectiousness);
+                                healthyHuman.setInfectiousness(newInfectiousness);
+                                humans.set(n, healthyHuman);
+                            }
+                        }
+                    } else {
+                        j--;
+                    }
+                }
+            }
+        }
+        return humans;
+    }
+
+    private ArrayList<Animal> contactAtoA(ArrayList<Animal> animals) {
+        for(int i = 0; i < animals.size(); i++) {
+            if (animals.get(i).isInfected()) {
+                Animal infectedAnimal = animals.get(i);
+                float infectiousness = infectedAnimal.getInfectiousness();
+                for(int j = 0; j < this.AtoAcontacts - 1; j++) {
+                    int n = (int)(Math.random() * animals.size());
+                    if (n != i) {
+                        if (!animals.get(n).isVaccinated() && !animals.get(n).isInfected()) {
+                            Animal healthyAnimal = animals.get(n);
+                            float proc = (float)Math.random();
+                            if (proc < (infectiousness)) {
+                                float newInfectiousness = (float)(Math.random()*(this.maxInfectiousness - this.minInfectiousness) + this.minInfectiousness);
+                                healthyAnimal.setInfectiousness(newInfectiousness);
+                                animals.set(n, healthyAnimal);
+                            }
+                        }
+                    } else {
+                        j--;
+                    }
+                }
+            }
+        }
+        return animals;
+    }
+
+    // private ArrayList<Human> updateTimeToDeath(ArrayList<Human> humans) {
+    //     for(int i = 0; i < humans.size(); i++) {
+
+    //     }
+    // }
+
+    // private void killCreatures(ArrayList<Human> humans, ArrayList<Animal> animals) {
+    //     for(int i = 0; i < humans.size(); i++) {
+    //         if(humans.get(i).getTimeToDeath() == 0) {
+    //             humans.remove(i);
+    //             i--;
+    //         }
+    //     }
+    //     for(int i = 0; i < animals.size(); i++) {
+    //         if(animals.get(i).getTimeToDeath() == 0) {
+    //             animals.remove(i);
+    //             i--;
+    //         }
+    //     }
+    // }
+
+    private void killCreatures(ArrayList<Creature> creatures) {
+        for(int i = 0; i < creatures.size(); i++) {
+            if(creatures.get(i).getTimeToDeath() == 0) {
+                creatures.remove(i);
+                i--;
+            }
+        }
+    }
+
+    private Stats updateStats(Stats stats, ArrayList<Human> humans, ArrayList<Animal> animals) {
+        int countInfHumans = 0;
+        int countInfAnimals = 0;
+        for(Human human : humans) {
+            if (human.isInfected())
+                countInfHumans++;
+        }
+        for(Animal animal : animals) {
+            if (animal.isInfected())
+                countInfAnimals++;
+        }
+
+        int humanDeaths = stats.startHumanPopulation - humans.size();
+        int animalDeaths  = stats.startAnimalPopulation - animals.size();
+
+        stats.infectedHumans = countInfHumans;
+        stats.infectedAnimals = countInfAnimals;
+        stats.humanDeaths = humanDeaths;
+        stats.animalDeaths = animalDeaths;
+        return stats;
     }
 }

@@ -16,18 +16,18 @@ public abstract class Creature {
     public abstract float getInfectiousness();
     public abstract void setInfectiousness(float infectiousness);
 
-    public int getVirusLifetime() {
+    public int getTimeToDeath() {
         if (this.virus != null) {
-            return this.virus.getLifetime();
+            return this.virus.getTimeToDeath();
         } else {
-            return 0;
+            return -1;
         }
     }
 
-    public void updateVirusLifetime() {
+    public void updateTimeToDeath() {
         if (this.virus != null) {
-            int lifetime = this.getVirusLifetime() + 1;
-            this.virus.setLifetime(lifetime);
+            int lifetime = this.getTimeToDeath() - 1;
+            this.virus.setTimeToDeath(lifetime);
         }
     }
 }
