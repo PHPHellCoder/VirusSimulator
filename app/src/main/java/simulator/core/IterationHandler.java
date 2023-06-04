@@ -35,7 +35,7 @@ public class IterationHandler {
         countries.add(country);
     }
 
-    public int getCurrentIteration() {
+    public int getIteration() {
         return this.currentIteration;
     }
 
@@ -64,10 +64,8 @@ public class IterationHandler {
             killCreatures(animals);
             updateTimeToDeath(humans);
             updateTimeToDeath(animals);
-            humans = this.contactHtoH(humans);
-            country.setHumans(humans);
-            animals = this.contactAtoA(animals);
-            country.setAnimals(animals);
+            this.contactHtoH(humans);
+            this.contactAtoA(animals);
             country.updateStats(this.updateStats(country.getStats(), humans, animals));
         }
     }
@@ -80,7 +78,9 @@ public class IterationHandler {
         return allStats;
     }
 
-    private ArrayList<Human> contactHtoH(ArrayList<Human> humans) {
+    private void contactHtoH(ArrayList<Human> humans) {
+        if(humans.size() < 2)
+            return;
         for(int i = 0; i < humans.size(); i++) {
             if (humans.get(i).isInfected()) {
                 Human infectedHuman = humans.get(i);
@@ -111,10 +111,11 @@ public class IterationHandler {
                 }
             }
         }
-        return humans;
     }
 
-    private ArrayList<Animal> contactAtoA(ArrayList<Animal> animals) {
+    private void contactAtoA(ArrayList<Animal> animals) {
+        if(animals.size() < 2)
+            return;
         for(int i = 0; i < animals.size(); i++) {
             if (animals.get(i).isInfected()) {
                 Animal infectedAnimal = animals.get(i);
@@ -137,7 +138,10 @@ public class IterationHandler {
                 }
             }
         }
-        return animals;
+    }
+
+    private void contactHtoA(ArrayList<Human> humans, ArrayList<Animal> animals) {
+
     }
 
     private void updateTimeToDeath(ArrayList<? extends Creature> creatures) {

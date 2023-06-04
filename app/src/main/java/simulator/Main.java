@@ -10,16 +10,16 @@ public class Main {
         simulator.addCountry("Poland", 5, 10);
         simulator.startSimulation("Poland");
 
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 20; i++) {
             HashMap<String, Stats> allStats = simulator.getAllStats();
             for(HashMap.Entry<String, Stats> stats : allStats.entrySet()) {
+                System.out.println("*************** Iteration "+simulator.getIteration()+" ***************");
                 System.out.println(stats.getKey());
                 HashMap<String, Integer> HMstats = stats.getValue().getHashMap();
                 for(HashMap.Entry<String, Integer> stat : HMstats.entrySet()) {
                     System.out.println("\t"+stat.getKey()+" "+stat.getValue());
                 }
             }
-            System.out.println("***********************************************************************");
             simulator.nextIteration();
         }
 
