@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="577.0" prefWidth="835.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="simulator.MainController">
+   <children>
+      <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="40.0" prefWidth="173.0">
+         <children>
+            <Slider fx:id="minInfSlider" layoutX="3.0" layoutY="26.0" onMouseDragged="#minInfChange" value="20.0" />
+            <TextFlow layoutX="3.0" layoutY="6.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="136.0" text="Minimum infectiousness:" />
+                  <Label fx:id="minInfLabel" prefHeight="17.0" prefWidth="44.0" text="20.0%" />
+               </children>
+            </TextFlow>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="14.0" layoutY="54.0" prefHeight="40.0" prefWidth="173.0">
+         <children>
+            <Slider fx:id="maxInfSlider" layoutX="3.0" layoutY="26.0" onMouseDragged="#maxInfChange" value="100.0" />
+            <TextFlow layoutX="3.0" layoutY="6.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="136.0" text="Maximum infectiousness:" />
+                  <Label fx:id="maxInfLabel" prefHeight="17.0" prefWidth="44.0" text="100.0%" />
+               </children>
+            </TextFlow>
+         </children>
+      </AnchorPane>
+      <AnchorPane disable="true" layoutX="14.0" layoutY="94.0" prefHeight="40.0" prefWidth="173.0">
+         <children>
+            <Slider fx:id="minInfSlider2" layoutX="3.0" layoutY="26.0" onMouseDragged="#minInfChange" />
+            <TextFlow layoutX="3.0" layoutY="6.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="136.0" text="Humans with mask" />
+                  <Label fx:id="minInfLabel2" prefHeight="17.0" prefWidth="44.0" text="0" />
+               </children>
+            </TextFlow>
+         </children>
+      </AnchorPane>
+      <AnchorPane disable="true" layoutX="14.0" layoutY="134.0" prefHeight="40.0" prefWidth="173.0">
+         <children>
+            <Slider fx:id="minInfSlider3" layoutX="3.0" layoutY="26.0" onMouseDragged="#minInfChange" />
+            <TextFlow layoutX="3.0" layoutY="6.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="136.0" text="Vaccinated animals" />
+                  <Label fx:id="minInfLabel3" prefHeight="17.0" prefWidth="44.0" text="0" />
+               </children>
+            </TextFlow>
+         </children>
+      </AnchorPane>
+      <Button fx:id="startbtn" layoutX="328.0" layoutY="526.0" mnemonicParsing="false" onAction="#startSimulation" text="Start simulation" />
+      <AnchorPane layoutX="258.0" layoutY="421.0">
+         <children>
+            <RadioButton fx:id="iRadio1" layoutY="32.0" mnemonicParsing="false" onAction="#iRadio1Action" selected="true" text="Until the infected die">
+               <toggleGroup>
+                  <ToggleGroup fx:id="tick" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="iRadio2" layoutX="144.0" layoutY="32.0" mnemonicParsing="false" onAction="#iRadio2Action" text="Exact amount:" toggleGroup="$tick" />
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="27.0" prefHeight="25.0" prefWidth="210.0" text="How much iterations:" />
+            <TextField fx:id="iteText" disable="true" layoutX="145.0" layoutY="60.0" onKeyTyped="#iteTextAction" prefHeight="25.0" prefWidth="95.0" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="497.0" layoutY="14.0" prefHeight="154.0" prefWidth="311.0">
+         <children>
+            <Button layoutX="121.0" layoutY="115.0" mnemonicParsing="false" onAction="#addCountry" text="Add country" />
+            <AnchorPane layoutY="37.0" prefHeight="25.0" prefWidth="324.0">
+               <children>
+                  <Spinner fx:id="sHumanPopulation" editable="true" layoutX="175.0" />
+                  <Label layoutY="4.0" text="Human population" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutY="77.0" prefHeight="25.0" prefWidth="324.0">
+               <children>
+                  <Spinner fx:id="sAnimalPopulation" editable="true" layoutX="175.0" />
+                  <Label layoutY="4.0" text="Animal population" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutY="2.0" prefHeight="25.0" prefWidth="324.0">
+               <children>
+                  <Label layoutY="4.0" text="Countyr name" />
+                  <TextField fx:id="tCountryName" layoutX="175.0" />
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</Pane>

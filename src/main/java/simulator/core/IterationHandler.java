@@ -4,16 +4,18 @@ import simulator.core.essence.creature.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.lang.Math;
+import java.util.Map;
 
 public class IterationHandler {
     // Fields
     private ArrayList<Country> countries = new ArrayList<>();
     private int currentIteration = 0;
-    private int HtoHcontacts;
-    private int AtoAcontacts;
-    private int HtoAcontacts;
-    private float minInfectiousness;
-    private float maxInfectiousness;
+    private int totalInfected = 0;
+    private final int HtoHcontacts;
+    private final int AtoAcontacts;
+    private final int HtoAcontacts;
+    private final float minInfectiousness;
+    private final float maxInfectiousness;
 
     // Methods
     public IterationHandler(int HtoHcontacts, int AtoAcontacts, int HtoAcontacts, float minInfectiousness, float maxInfectiousness) {
@@ -39,18 +41,17 @@ public class IterationHandler {
         return this.currentIteration;
     }
 
-    public void startSimulation(String countryName) {
+    public void startSimulation() {
         for(Country country : this.countries) {
-            if (country.getCountryName() == countryName) {
-                Stats stats = country.getStats();
-                ArrayList<Animal> animals = country.getAnimals();
-                Animal animal = animals.get(0);
-                animal.setInfectiousness(1);
-                animals.set(0, animal);
-                country.setAnimals(animals);
-                stats.infectedAnimals++;
-                return;
-            }
+            Stats stats = country.getStats();
+            ArrayList<Animal> animals = country.getAnimals();
+            Animal animal = animals.get(0);
+            animal.setInfectiousness(1);
+            animals.set(0, animal);
+            country.setAnimals(animals);
+            stats.infectedAnimals++;
+            this.totalInfected++;
+            this.currentIteration = 0;
         }
     }
 
@@ -66,7 +67,10 @@ public class IterationHandler {
             updateTimeToDeath(animals);
             this.contactHtoH(humans);
             this.contactAtoA(animals);
+            this.contactHtoA(humans, animals);
             country.updateStats(this.updateStats(country.getStats(), humans, animals));
+            this.updateTotalInfected();
+            this.currentIteration++;
         }
     }
 
@@ -76,6 +80,9 @@ public class IterationHandler {
             allStats.put(country.getCountryName(), country.getStats());
         }
         return allStats;
+    }
+    public HashMap<String, Integer> getStatsByCountryName(String name) {
+        return this.countries.get(0).getStats().getHashMap();
     }
 
     private void contactHtoH(ArrayList<Human> humans) {
@@ -141,6 +148,57 @@ public class IterationHandler {
     }
 
     private void contactHtoA(ArrayList<Human> humans, ArrayList<Animal> animals) {
+        if(humans.size() < 1 || animals.size() < 1)
+            return;
+
+        for(int i = 0; i < humans.size(); i++) {
+            if (humans.get(i).isInfected()) {
+                Human infectedHuman = humans.get(i);
+                float infectiousness = infectedHuman.getInfectiousness();
+                if (infectedHuman.hasMask)
+                    infectiousness /= 2;
+                for(int j = 0; j < this.HtoAcontacts - 1; j++) {
+                    int n = (int)(Math.random() * animals.size());
+                    if (!animals.get(n).isVaccinated() && !animals.get(n).isInfected()) {
+                        Animal healthyAnimal = animals.get(n);
+                        float proc = (float)Math.random();
+                        if (proc < (infectiousness)) {
+                            float newInfectiousness = (float)(Math.random()*(this.maxInfectiousness - this.minInfectiousness) + this.minInfectiousness);
+                            healthyAnimal.setInfectiousness(newInfectiousness);
+                            animals.set(n, healthyAnimal);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        for(int i = 0; i < animals.size(); i++) {
+            if (animals.get(i).isInfected()) {
+                Animal infectedAnimal = animals.get(i);
+                float infectiousness = infectedAnimal.getInfectiousness();
+                for(int j = 0; j < this.HtoAcontacts - 1; j++) {
+                    int n = (int)(Math.random() * humans.size());
+                    Human healthyHuman = humans.get(n);
+                    float proc = (float)Math.random();
+                    try {
+                        if (healthyHuman.hasMask()) {
+                            if (proc < (infectiousness / 1.5)) {
+                                float newInfectiousness = (float) (Math.random() * (this.maxInfectiousness - this.minInfectiousness) + this.minInfectiousness);
+                                healthyHuman.setInfectiousness(newInfectiousness);
+                                humans.set(n, healthyHuman);
+                            }
+                        } else {
+                            if (proc < infectiousness) {
+                                float newInfectiousness = (float) (Math.random() * (this.maxInfectiousness - this.minInfectiousness) + this.minInfectiousness);
+                                healthyHuman.setInfectiousness(newInfectiousness);
+                                humans.set(n, healthyHuman);
+                            }
+                        }
+                    } catch (IndexOutOfBoundsException e) {}
+                }
+            }
+        }
 
     }
 
@@ -179,5 +237,18 @@ public class IterationHandler {
         stats.humanDeaths = humanDeaths;
         stats.animalDeaths = animalDeaths;
         return stats;
+    }
+
+    public int getTotalInfected() {
+        return this.totalInfected;
+    }
+
+    private void updateTotalInfected() {
+        int infected = 0;
+        for(Country country : this.countries) {
+            infected += country.getStats().infectedAnimals;
+            infected += country.getStats().infectedHumans;
+        }
+        this.totalInfected = infected;
     }
 }
