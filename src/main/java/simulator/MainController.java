@@ -260,7 +260,7 @@ public class MainController implements Initializable {
         final LineChart<Number,Number> lineChart =
                 new LineChart<Number,Number>(xAxis,yAxis);
 
-        lineChart.setTitle("Simulation Results");
+        lineChart.setTitle(title);
         lineChart.setCreateSymbols(false);
 
         Scene scene  = new Scene(lineChart,800,600);
