@@ -1,7 +1,9 @@
 package simulator;
 
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -32,6 +34,7 @@ public class MainController implements Initializable {
     private int iterations = 0;
     private ArrayList<CountryPrepare> countries = new ArrayList<>();
     private int humanPopulation = 1, animalPopulation = 1;
+    private ArrayList<String> countryNames = new ArrayList<>();
     
     protected class CountryPrepare {
         public String name;
@@ -47,6 +50,10 @@ public class MainController implements Initializable {
     private Slider minInfSlider, maxInfSlider;
     @FXML
     private Spinner<Integer> sHumanPopulation, sAnimalPopulation;
+    @FXML
+    private ListView<String> countryList;
+    @FXML
+    private Button rmBtn, aeBtn;
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
@@ -66,6 +73,23 @@ public class MainController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
                 animalPopulation = sAnimalPopulation.getValue();
+            }
+        });
+
+        countryList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                String countryName = countryList.getSelectionModel().getSelectedItem();
+                for(CountryPrepare country : countries) {
+                    if(country.name == countryName) {
+                        tCountryName.setText(country.name);
+                        sHumanPopulation.getValueFactory().setValue(country.humanPopulation);
+                        sAnimalPopulation.getValueFactory().setValue(country.animalPopulation);
+                        aeBtn.setText("Edit");
+                        rmBtn.setDisable(false);
+                        break;
+                    }
+                }
             }
         });
     }
@@ -112,12 +136,66 @@ public class MainController implements Initializable {
         }
     }
     @FXML
-    protected void addCountry() {
+    protected void addEditCountry() {
+        String btnText = aeBtn.getText();
         CountryPrepare temp = new CountryPrepare();
         temp.name = this.tCountryName.getText();
         temp.humanPopulation = this.humanPopulation;
         temp.animalPopulation = this.animalPopulation;
-        this.countries.add(temp);
+        if(btnText.equals("Add")) {
+            this.countries.add(temp);
+            this.countryList.getItems().add(temp.name);
+            tCountryName.setText("");
+            sHumanPopulation.getValueFactory().setValue(1);
+            sAnimalPopulation.getValueFactory().setValue(1);
+            countryList.getSelectionModel().select(-1);
+        } else if (btnText.equals("Edit")) {
+            for (CountryPrepare country : countries) {
+                if (country.name.equals(temp.name)) {
+                    country.humanPopulation = temp.humanPopulation;
+                    country.animalPopulation = temp.animalPopulation;
+                    tCountryName.setText("");
+                    sHumanPopulation.getValueFactory().setValue(1);
+                    sAnimalPopulation.getValueFactory().setValue(1);
+                    aeBtn.setText("Add");
+                    rmBtn.setDisable(true);
+                    countryList.getSelectionModel().select(-1);
+                    break;
+                }
+            }
+        }
+    }
+    @FXML
+    protected void removeCountry() {
+        String name = tCountryName.getText();
+        for(CountryPrepare country : countries) {
+            if(country.name.equals(name)) {
+                countries.remove(country);
+                tCountryName.setText("");
+                sHumanPopulation.getValueFactory().setValue(1);
+                sAnimalPopulation.getValueFactory().setValue(1);
+                countryList.getSelectionModel().select(-1);
+                aeBtn.setText("Add");
+                rmBtn.setDisable(true);
+                countryList.getItems().remove(name);
+                break;
+            }
+        }
+    }
+    @FXML
+    protected void tCountryNameAction() {
+        String name = tCountryName.getText();
+        for(CountryPrepare country : countries) {
+            if(country.name.equals(name)) {
+                aeBtn.setText("Edit");
+                rmBtn.setDisable(false);
+                break;
+            } else {
+                aeBtn.setText("Add");
+                rmBtn.setDisable(true);
+            }
+        }
+
     }
     @FXML
     protected void startSimulation() {
